@@ -4,7 +4,6 @@ const router = express.Router();
 // get will handle incoming get requests
 // this cannot be JUST /products, because that means it will be /products/products
 // can split the different routes (E.g., /products/SUBURL IS ALL HERE )
-
 router.get("/", (req, res, next) => {
 	res.status(200).json({
 		message: "handling get request to /products"
@@ -13,8 +12,15 @@ router.get("/", (req, res, next) => {
 
 // this will now handle post requests
 router.post("/", (req, res, next) => {
+	const product = {
+		// name is name property - we should set up documentation which data need to work correctly
+		name: req.body.name,
+		price: req.body.price
+	};
 	res.status(200).json({
-		message: "handling get request to /products"
+		message: "handling get request to /products",
+		// returns name and price
+		createdProduct: product
 	});
 });
 
