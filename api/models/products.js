@@ -1,17 +1,19 @@
 const mongoose = require("mongoose");
 
-const ObjectId = Schema.Types.ObjectId;
-
 let ProductSchema = new mongoose.Schema({
-	ObjectId,
+	_id: mongoose.Schema.Types.ObjectId,
 	name: {
-		type: String
+		type: String,
+		trim: true
 	},
 	price: {
-		type: Number
+		type: Number,
+		trim: true
 	}
 });
 
 ProductSchema.set("autoIndex", true);
 
-module.exports = mongoose.model("Product", ProductSchema);
+let product = mongoose.model("Product", ProductSchema);
+
+module.exports = product;

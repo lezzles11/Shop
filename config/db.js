@@ -1,5 +1,6 @@
+require("dotenv").config();
 const mongoose = require("mongoose");
-const db = `mongodb+srv://lezzles:${password}@cluster-21dks.mongodb.net/asdf?retryWrites=true&w=majority`;
+const db = `mongodb+srv://lezzles:orangeorange@cluster-21dks.mongodb.net/asdf?retryWrites=true&w=majority`;
 
 const connectDB = async () => {
   try {
