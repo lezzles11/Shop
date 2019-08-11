@@ -41,6 +41,11 @@ app.use(bodyParser.json());
 app.use("/products", productRoute);
 app.use("/orders", orderRoute);
 
+const USER = process.env.USERNAME_MONGODB;
+const PASSWORD = process.env.PASSWORD_MONGODB;
+const db = `mongodb+srv://${USER}:${PASSWORD}@cluster-21dks.mongodb.net/asdf?retryWrites=true&w=majority`;
+mongoose.connect(db, { useNewUrlParser: true });
+
 // needs to come after your routes
 // handle every request that reaches this line (because products and orders did not handle this request)
 app.use((req, res, next) => {

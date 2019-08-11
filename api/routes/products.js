@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
+// IF WANT TO REPLACE WITH ANOTHER OBJECT, LOOK FOR THE VAR "REPLACE".
+
+// REPLACE
 const ProPro = require("../models/products");
 // get will handle incoming get requests
 // this cannot be JUST /products, because that means it will be /products/products
@@ -8,16 +11,16 @@ const ProPro = require("../models/products");
 router.get("/", (req, res, next) => {
 	// if you don't pass anything in here, it will find all elements
 	ProPro.find()
-		// define what fields you want to select
+		// REPLACE; define what fields you want to select
 		.select("name price _id")
 		.exec()
 		.then(docs => {
-			// what if you want to add more data? create an object
+			// REPLACE; what if you want to add more data? create an object
 			const response = {
 				count: docs.length,
 				products: docs.map(doc => {
 					return {
-						// pass ANYTHING you want here
+						// REPLACE; pass ANYTHING you want here
 						name: doc.name,
 						price: doc.price,
 						_id: doc._id,
@@ -48,9 +51,10 @@ router.get("/", (req, res, next) => {
 // works (after creating config/db.js)
 // this will now handle post requests
 router.post("/", (req, res, next) => {
-	// new product as a constructor
+	// REPLACE; new product as a constructor
 	console.log(req.body.name);
 	console.log(req.body.price);
+	// REPLACE;
 	const newProduct = new ProPro({
 		_id: new mongoose.Types.ObjectId(),
 		name: req.body.name,
@@ -58,7 +62,6 @@ router.post("/", (req, res, next) => {
 		date: new Date()
 	});
 	// save is a method -> stores mongoose models / data into the database
-	// then
 	newProduct
 		.save()
 		.then(result => {
@@ -79,16 +82,26 @@ router.post("/", (req, res, next) => {
 // WORKS
 // product is already at /products
 // colon, and any name of your choice
-router.get("/:productId", (req, res, next) => {
+router.get("/:id", (req, res, next) => {
 	// extract product id
-	const id = req.params.productId;
+	const id = req.params.id;
 	// static methods on the const you already declared
 	ProPro.findById(id)
+		// REPLACE;
+		.select("name price _id")
 		.exec()
 		.then(doc => {
 			console.log("From database: ", doc);
 			if (doc) {
-				res.status(200).json(doc);
+				// REPLACE;
+				res.status(200).json({
+					product: doc,
+					description: "Get all Products",
+					request: {
+						type: "GET",
+						url: "http://localhost:3000/products"
+					}
+				});
 			} else {
 				res.status(404).json({
 					message: "no valid entry found for id"
@@ -101,9 +114,9 @@ router.get("/:productId", (req, res, next) => {
 			res.status(500).json({ error: err });
 		});
 });
-
-router.patch("/:productId", (req, res, next) => {
-	const id = req.params.productId;
+// when updating, input data like so: [{"propName": "name", "value": "something more useful" }]
+router.patch("/:id", (req, res, next) => {
+	const id = req.params.id;
 	const updateOps = {};
 	// turn reqbody into an array
 	for (const ops of req.body) {
@@ -113,10 +126,19 @@ router.patch("/:productId", (req, res, next) => {
 	// $set describes key value pairs and how to update them
 	// use set because you might not get both new name and price
 	ProPro.update({ _id: id }, { $set: updateOps })
+		// REPLACE;
+		.select("_id name price")
 		.exec()
 		.then(result => {
 			console.log(result);
-			res.status(200).json(result);
+			res.status(200).json({
+				// REPLACE;
+				message: "Product updated",
+				request: {
+					type: "get",
+					url: "http://localhost:3000/products/" + id
+				}
+			});
 		})
 		.catch(err => {
 			console.log(err);
@@ -126,14 +148,23 @@ router.patch("/:productId", (req, res, next) => {
 		});
 });
 // delete product came up - does it actually delete the product?
-router.delete("/:productId", (req, res, next) => {
-	const id = req.params.productId;
+router.delete("/:id", (req, res, next) => {
+	const id = req.params.id;
 	ProPro.remove({
 		_id: id
 	})
 		.exec()
 		.then(result => {
-			res.status(200).json(result);
+			res.status(200).json({
+				message: "product deleted",
+				request: {
+					type: "POST",
+					// notifying others what you can do
+					url: "http://localhost:3000/",
+					// REPLACE;
+					data: { name: "String", price: "Number" }
+				}
+			});
 		})
 		.catch(err => {
 			console.log(err);
