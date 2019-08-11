@@ -11,7 +11,13 @@ router.get("/", (req, res, next) => {
 		.exec()
 		.then(docs => {
 			console.log(docs);
-			res.status(200).json(docs);
+			if (docs.length >= 0) {
+				res.status(200).json(docs);
+			} else {
+				res.status(200).json({
+					message: "No entries found"
+				});
+			}
 		})
 		.catch(err => {
 			console.log(err);
@@ -79,9 +85,27 @@ router.get("/:productId", (req, res, next) => {
 });
 
 router.patch("/:productId", (req, res, next) => {
-	res.status(200).json({
-		message: "updated product"
-	});
+	const id = req.params.productId;
+	const updateOps = {};
+	// turn reqbody into an array
+	for (const ops of req.body) {
+		// ops.propName will be name or price
+		updateOps[ops.propName] = ops.value;
+	}
+	// $set describes key value pairs and how to update them
+	// use set because you might not get both new name and price
+	ProPro.update({ _id: id }, { $set: updateOps })
+		.exec()
+		.then(result => {
+			console.log(result);
+			res.status(200).json(result);
+		})
+		.catch(err => {
+			console.log(err);
+			res.status(500).json({
+				error: err
+			});
+		});
 });
 // delete product came up - does it actually delete the product?
 router.delete("/:productId", (req, res, next) => {
