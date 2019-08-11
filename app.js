@@ -1,6 +1,5 @@
 // make express application
 // handle requests for us
-
 const express = require("express");
 
 // can use express' application and methods
@@ -10,8 +9,18 @@ const app = express();
 const morgan = require("morgan");
 // stringify stuff
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
+mongoose
+	.connect(
+		"mongodb+srv://lezzles:orangeorange@cluster-21dks.mongodb.net/asdf?retryWrites=true&w=majority",
+		{
+			useNewUrlParser: true
+		}
+	)
+	.then(console.log("connected"));
 
 // THIS IS IMPORTANT. ADJUST RESPONSE SO HEADERS MATCH. Prevent CORS Errors.
+/*
 app.use((req, res, next) => {
 	res.header("Access-Control-Allow-Origin", "*");
 	res.header(
@@ -27,11 +36,22 @@ app.use((req, res, next) => {
 		return res.status(200).json({});
 	}
 });
+*/
+
+var allowCrossDomain = function(req, res, next) {
+	res.header("Access-Control-Allow-Origin", "*");
+	res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
+	res.header("Access-Control-Allow-Headers", "Content-Type");
+
+	next();
+};
+
+app.use(allowCrossDomain);
 
 // all the product routes will go through here - folder
-const productRoutes = require("./routes/products");
+const productRoute = require("./api/routes/products");
 //make sure you always put this up, when you add a new route
-const orderRoutes = require("./routes/orders");
+const orderRoute = require("./api/routes/orders");
 // MIDDLEWARE: incoming request has to go through app.use and whatever we pass to it
 // only requests that start with this path
 
@@ -45,8 +65,8 @@ app.use(bodyParser.json());
 
 // MIDDLEWARE - forwards to products and orders
 //make sure you always put this up, when you add a new route
-app.use("/products", productRoutes);
-app.use("/orders", orderRoutes);
+app.use("/products", productRoute);
+app.use("/orders", orderRoute);
 
 // needs to come after your routes
 // handle every request that reaches this line (because products and orders did not handle this request)
