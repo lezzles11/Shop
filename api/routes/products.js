@@ -78,16 +78,27 @@ router.get("/:productId", (req, res, next) => {
 		});
 });
 
-router.patch("/:id", (req, res, next) => {
+router.patch("/:productId", (req, res, next) => {
 	res.status(200).json({
 		message: "updated product"
 	});
 });
 // delete product came up - does it actually delete the product?
-router.delete("/:id", (req, res, next) => {
-	res.status(200).json({
-		message: "delete product"
-	});
+router.delete("/:productId", (req, res, next) => {
+	const id = req.params.productId;
+	ProPro.remove({
+		_id: id
+	})
+		.exec()
+		.then(result => {
+			res.status(200).json(result);
+		})
+		.catch(err => {
+			console.log(err);
+			res.status(500).json({
+				error: err
+			});
+		});
 });
 
 // so ALl the routes above can be exported
