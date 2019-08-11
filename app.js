@@ -11,24 +11,6 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 
 // THIS IS IMPORTANT. ADJUST RESPONSE SO HEADERS MATCH. Prevent CORS Errors.
-/*
-app.use((req, res, next) => {
-	res.header("Access-Control-Allow-Origin", "*");
-	res.header(
-		"Access-Control-Allow-Headers",
-		"Origin, X-Requested-With, Content-Type, Accept, Authorization"
-	);
-	if (req.method === "OPTIONS") {
-		res.header(
-			"Access-Control-Allow-Methods",
-			// All the words you want to support with your API
-			"PUT, POST, PATCH, DELETE, GET"
-		);
-		return res.status(200).json({});
-	}
-});
-*/
-
 var allowCrossDomain = function(req, res, next) {
 	res.header("Access-Control-Allow-Origin", "*");
 	res.header("Access-Control-Allow-Methods", "GET,PATCH,PUT,POST,DELETE");

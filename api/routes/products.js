@@ -6,9 +6,19 @@ const ProPro = require("../models/products");
 // this cannot be JUST /products, because that means it will be /products/products
 // can split the different routes (E.g., /products/SUBURL IS ALL HERE )
 router.get("/", (req, res, next) => {
-	res.status(200).json({
-		message: "handling get request to /products"
-	});
+	// if you don't pass anything in here, it will find all elements
+	ProPro.find()
+		.exec()
+		.then(docs => {
+			console.log(docs);
+			res.status(200).json(docs);
+		})
+		.catch(err => {
+			console.log(err);
+			res.status(500).json({
+				error: err
+			});
+		});
 });
 
 // works (after creating config/db.js)
