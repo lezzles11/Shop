@@ -8,11 +8,29 @@ const ProPro = require("../models/products");
 router.get("/", (req, res, next) => {
 	// if you don't pass anything in here, it will find all elements
 	ProPro.find()
+		// define what fields you want to select
+		.select("name price _id")
 		.exec()
 		.then(docs => {
-			console.log(docs);
+			// what if you want to add more data? create an object
+			const response = {
+				count: docs.length,
+				products: docs.map(doc => {
+					return {
+						// pass ANYTHING you want here
+						name: doc.name,
+						price: doc.price,
+						_id: doc._id,
+						request: {
+							type: "GET",
+							url: "http://localhost:3000/products/" + doc._id
+						}
+					};
+				})
+			};
+			console.log(response);
 			if (docs.length >= 0) {
-				res.status(200).json(docs);
+				res.status(200).json(response);
 			} else {
 				res.status(200).json({
 					message: "No entries found"
