@@ -12,7 +12,8 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 mongoose
 	.connect(
-		"mongodb+srv://lezzles:orangeorange@cluster-21dks.mongodb.net/asdf?retryWrites=true&w=majority",
+		`mongodb+srv://lezzles:${password}@cluster-21dks.mongodb.net/asdf?retryWrites=true&w=majority`,
+
 		{
 			useNewUrlParser: true
 		}
