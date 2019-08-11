@@ -82,9 +82,9 @@ router.post("/", (req, res, next) => {
 // WORKS
 // product is already at /products
 // colon, and any name of your choice
-router.get("/:id", (req, res, next) => {
+router.get("/:productId", (req, res, next) => {
 	// extract product id
-	const id = req.params.id;
+	const id = req.params.productId;
 	// static methods on the const you already declared
 	ProPro.findById(id)
 		// REPLACE;
@@ -115,8 +115,8 @@ router.get("/:id", (req, res, next) => {
 		});
 });
 // when updating, input data like so: [{"propName": "name", "value": "something more useful" }]
-router.patch("/:id", (req, res, next) => {
-	const id = req.params.id;
+router.patch("/:productId", (req, res, next) => {
+	const id = req.params.productId;
 	const updateOps = {};
 	// turn reqbody into an array
 	for (const ops of req.body) {
@@ -148,8 +148,8 @@ router.patch("/:id", (req, res, next) => {
 		});
 });
 // delete product came up - does it actually delete the product?
-router.delete("/:id", (req, res, next) => {
-	const id = req.params.id;
+router.delete("/:productId", (req, res, next) => {
+	const id = req.params.productId;
 	ProPro.remove({
 		_id: id
 	})
