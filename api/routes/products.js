@@ -18,8 +18,10 @@ router.post("/", (req, res, next) => {
 	console.log(req.body.name);
 	console.log(req.body.price);
 	const newProduct = new ProPro({
+		_id: new mongoose.Types.ObjectId(),
 		name: req.body.name,
-		price: req.body.price
+		price: req.body.price,
+		date: new Date()
 	});
 	// save is a method -> stores mongoose models / data into the database
 	// then
@@ -43,19 +45,27 @@ router.post("/", (req, res, next) => {
 // WORKS
 // product is already at /products
 // colon, and any name of your choice
-router.get("/:id", (req, res, next) => {
+router.get("/:productId", (req, res, next) => {
 	// extract product id
-	const id = req.params.id;
-	if (id === "special") {
-		res.status(200).json({
-			message: "you discovered the special id!",
-			id: id
+	const id = req.params.productId;
+	// static methods on the const you already declared
+	ProPro.findById(id)
+		.exec()
+		.then(doc => {
+			console.log("From database: ", doc);
+			if (doc) {
+				res.status(200).json(doc);
+			} else {
+				res.status(404).json({
+					message: "no valid entry found for id"
+				});
+			}
+		})
+		// dont want to send res.send after catch
+		.catch(err => {
+			console.log(err);
+			res.status(500).json({ error: err });
 		});
-	} else {
-		res.status(200).json({
-			message: "You passed an ID"
-		});
-	}
 });
 
 router.patch("/:id", (req, res, next) => {

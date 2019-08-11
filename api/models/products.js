@@ -9,11 +9,14 @@ let ProductSchema = new mongoose.Schema({
 	price: {
 		type: Number,
 		trim: true
+	},
+	date: {
+		type: Date
 	}
 });
 
 ProductSchema.set("autoIndex", true);
 
-let product = mongoose.model("Product", ProductSchema);
+let product = mongoose.model("ProPro", ProductSchema);
 
 module.exports = product;

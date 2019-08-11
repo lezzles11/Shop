@@ -1,8 +1,6 @@
-require("dotenv").config();
 // make express application
 // handle requests for us
 const express = require("express");
-
 // can use express' application and methods
 const app = express();
 
@@ -11,14 +9,6 @@ const morgan = require("morgan");
 // stringify stuff
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-mongoose
-	.connect(
-		`mongodb+srv://lezzles:orangeorange@cluster-21dks.mongodb.net/asdf?retryWrites=true&w=majority`,
-		{
-			useNewUrlParser: true
-		}
-	)
-	.then(console.log("connected"));
 
 // THIS IS IMPORTANT. ADJUST RESPONSE SO HEADERS MATCH. Prevent CORS Errors.
 /*
