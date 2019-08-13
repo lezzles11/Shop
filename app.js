@@ -27,6 +27,7 @@ const productRoute = require("./api/routes/products");
 const orderRoute = require("./api/routes/orders");
 // MIDDLEWARE: incoming request has to go through app.use and whatever we pass to it
 // only requests that start with this path
+const userRoutes = require("./api/routes/user");
 
 // do it before the routes
 app.use(morgan("dev"));
@@ -40,6 +41,7 @@ app.use(bodyParser.json());
 //make sure you always put this up, when you add a new route
 app.use("/products", productRoute);
 app.use("/orders", orderRoute);
+app.use("/user", userRoutes);
 
 const USER = process.env.USERNAME_MONGODB;
 const PASSWORD = process.env.PASSWORD_MONGODB;
