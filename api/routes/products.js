@@ -1,6 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
+const multer = require("multer");
+// initializes multer - specifies a folder in which all incoming files will be stored
+const upload = multer({ dest: "uploads/" });
+
 // IF WANT TO REPLACE WITH ANOTHER OBJECT, LOOK FOR THE VAR "REPLACE".
 
 // REPLACE
@@ -8,6 +12,8 @@ const ProPro = require("../models/products");
 // get will handle incoming get requests
 // this cannot be JUST /products, because that means it will be /products/products
 // can split the different routes (E.g., /products/SUBURL IS ALL HERE )
+
+// don't need to protect this route, because you want to let users see this part
 router.get("/", (req, res, next) => {
 	// if you don't pass anything in here, it will find all elements
 	ProPro.find()
@@ -49,8 +55,9 @@ router.get("/", (req, res, next) => {
 });
 
 // works (after creating config/db.js)
-// this will now handle post requests
-router.post("/", (req, res, next) => {
+// upload.single() means getting one file only
+router.post("/", upload.single("productImage"), (req, res, next) => {
+	console.log(req.file);
 	// REPLACE; new product as a constructor
 	console.log(req.body.name);
 	console.log(req.body.price);
@@ -114,6 +121,8 @@ router.get("/:productId", (req, res, next) => {
 			res.status(500).json({ error: err });
 		});
 });
+
+//You want to protect this route - that not every user can access this route
 // when updating, input data like so: [{"propName": "name", "value": "something more useful" }]
 router.patch("/:productId", (req, res, next) => {
 	const id = req.params.productId;
