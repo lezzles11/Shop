@@ -23,7 +23,7 @@ const fileFilter = (req, file, cb) => {
 		cb(null, false);
 	}
 };
-
+// can get image on localhost:3000 by /uploads/imageId
 const upload = multer({
 	storage: storage,
 	limits: {

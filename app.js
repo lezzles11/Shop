@@ -31,7 +31,7 @@ const userRoutes = require("./api/routes/user");
 
 // do it before the routes
 app.use(morgan("dev"));
-
+app.use("/uploads", express.static("uploads"));
 // what bodies do you want to parse? url encoded bodies ()
 // true means that you are passing a lot of data, false is less
 app.use(bodyParser.urlencoded({ extended: false }));
