@@ -12,6 +12,11 @@ let ProductSchema = mongoose.Schema({
 	},
 	date: {
 		type: Date
+	},
+	productImage: {
+		// url
+		type: String,
+		required: true
 	}
 });
 

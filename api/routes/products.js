@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const ProPro = require("../models/products");
 const mongoose = require("mongoose");
 const multer = require("multer");
 // initializes multer - specifies a folder in which all incoming files will be stored
@@ -16,7 +17,7 @@ const storage = multer.diskStorage({
 // creating filter for uploading images
 const fileFilter = (req, file, cb) => {
 	// if it is jpeg or png, accept it
-	if (file.mimetype === "image/jpeg" || filemimetype === "image/png") {
+	if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
 		cb(null, true);
 	} else {
 		cb(null, false);
@@ -34,7 +35,7 @@ const upload = multer({
 // IF WANT TO REPLACE WITH ANOTHER OBJECT, LOOK FOR THE VAR "REPLACE".
 
 // REPLACE
-const ProPro = require("../models/products");
+
 // get will handle incoming get requests
 // this cannot be JUST /products, because that means it will be /products/products
 // can split the different routes (E.g., /products/SUBURL IS ALL HERE )
@@ -44,7 +45,7 @@ router.get("/", (req, res, next) => {
 	// if you don't pass anything in here, it will find all elements
 	ProPro.find()
 		// REPLACE; define what fields you want to select
-		.select("name price _id")
+		.select("name price _id productImage")
 		.exec()
 		.then(docs => {
 			// REPLACE; what if you want to add more data? create an object
@@ -55,6 +56,7 @@ router.get("/", (req, res, next) => {
 						// REPLACE; pass ANYTHING you want here
 						name: doc.name,
 						price: doc.price,
+						productImage: doc.productImage,
 						_id: doc._id,
 						request: {
 							type: "GET",
@@ -92,6 +94,7 @@ router.post("/", upload.single("productImage"), (req, res, next) => {
 		_id: new mongoose.Types.ObjectId(),
 		name: req.body.name,
 		price: req.body.price,
+		productImage: req.file.path,
 		date: new Date()
 	});
 	// save is a method -> stores mongoose models / data into the database
@@ -121,7 +124,7 @@ router.get("/:productId", (req, res, next) => {
 	// static methods on the const you already declared
 	ProPro.findById(id)
 		// REPLACE;
-		.select("name price _id")
+		.select("name price _id productImage")
 		.exec()
 		.then(doc => {
 			console.log("From database: ", doc);
