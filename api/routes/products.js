@@ -3,7 +3,17 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const multer = require("multer");
 // initializes multer - specifies a folder in which all incoming files will be stored
-const upload = multer({ dest: "uploads/" });
+
+// multer will execute these functions whenever a file is receieved
+const storage = multer.diskStorage({
+	destination: function(req, file, cb) {
+		cb(null, "./uploads");
+	},
+	filename: function(req, file, cb) {
+		cb(null, new Date().toISOString() + file.originalname);
+	}
+});
+const upload = multer({ storage: storage });
 
 // IF WANT TO REPLACE WITH ANOTHER OBJECT, LOOK FOR THE VAR "REPLACE".
 
