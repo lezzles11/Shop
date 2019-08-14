@@ -13,7 +13,23 @@ const storage = multer.diskStorage({
 		cb(null, new Date().toISOString() + file.originalname);
 	}
 });
-const upload = multer({ storage: storage });
+// creating filter for uploading images
+const fileFilter = (req, file, cb) => {
+	// if it is jpeg or png, accept it
+	if (file.mimetype === "image/jpeg" || filemimetype === "image/png") {
+		cb(null, true);
+	} else {
+		cb(null, false);
+	}
+};
+
+const upload = multer({
+	storage: storage,
+	limits: {
+		fileSize: 1024 * 1024 * 5
+	},
+	fileFilter: fileFilter
+});
 
 // IF WANT TO REPLACE WITH ANOTHER OBJECT, LOOK FOR THE VAR "REPLACE".
 
