@@ -3,8 +3,9 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const Order = require("../models/order");
 const Product = require("../models/products");
+const checkAuth = require("../middleware/check-auth");
 // works
-router.get("/", (req, res, next) => {
+router.get("/", checkAuth, (req, res, next) => {
 	Order.find()
 		.select("product quantity _id")
 		.exec()
@@ -31,7 +32,7 @@ router.get("/", (req, res, next) => {
 		});
 });
 // works
-router.post("/", (req, res, next) => {
+router.post("/", checkAuth, (req, res, next) => {
 	// CANNOT CREATE new products for products that YOU DON'T HAVE.
 	// check if you have the product for that
 	Product.findById(req.body.productId)
@@ -71,8 +72,9 @@ router.post("/", (req, res, next) => {
 		});
 });
 
-router.get("/:orderId", (req, res, next) => {
+router.get("/:orderId", checkAuth, (req, res, next) => {
 	Order.findById(req.params.orderId)
+		.populate("product")
 		.exec()
 		.then(order => {
 			if (!order) {
@@ -95,7 +97,7 @@ router.get("/:orderId", (req, res, next) => {
 		});
 });
 
-router.delete("/:orderId", (req, res, next) => {
+router.delete("/:orderId", checkAuth, (req, res, next) => {
 	Order.remove({ _id: req.params.orderId })
 		.exec()
 		.then(result => {

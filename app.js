@@ -10,17 +10,6 @@ const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 
-// THIS IS IMPORTANT. ADJUST RESPONSE SO HEADERS MATCH. Prevent CORS Errors.
-var allowCrossDomain = function(req, res, next) {
-	res.header("Access-Control-Allow-Origin", "*");
-	res.header("Access-Control-Allow-Methods", "GET,PATCH,PUT,POST,DELETE");
-	res.header("Access-Control-Allow-Headers", "Content-Type");
-
-	next();
-};
-
-app.use(allowCrossDomain);
-
 // all the product routes will go through here - folder
 const productRoute = require("./api/routes/products");
 //make sure you always put this up, when you add a new route
@@ -29,24 +18,39 @@ const orderRoute = require("./api/routes/orders");
 // only requests that start with this path
 const userRoutes = require("./api/routes/user");
 
+const USER = process.env.USERNAME_MONGODB;
+const PASSWORD = process.env.PASSWORD_MONGODB;
+const db = `mongodb+srv://${USER}:${PASSWORD}@cluster-21dks.mongodb.net/asdf?retryWrites=true&w=majority`;
+mongoose.connect(db, { useNewUrlParser: true });
+mongoose.Promise = global.Promise;
+
 // do it before the routes
 app.use(morgan("dev"));
 app.use("/uploads", express.static("uploads"));
 // what bodies do you want to parse? url encoded bodies ()
 // true means that you are passing a lot of data, false is less
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+// THIS IS IMPORTANT. ADJUST RESPONSE SO HEADERS MATCH. Prevent CORS Errors.
+const allowCrossDomain = function(req, res, next) {
+	res.header("Access-Control-Allow-Origin", "*");
+	res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
+	res.header(
+		"Access-Control-Allow-Headers",
+		"Origin, X-Requested-With, Content-Type, Accept, Authorization"
+	);
+
+	next();
+};
+
+app.use(allowCrossDomain);
 
 // MIDDLEWARE - forwards to products and orders
 //make sure you always put this up, when you add a new route
 app.use("/products", productRoute);
 app.use("/orders", orderRoute);
 app.use("/user", userRoutes);
-
-const USER = process.env.USERNAME_MONGODB;
-const PASSWORD = process.env.PASSWORD_MONGODB;
-const db = `mongodb+srv://${USER}:${PASSWORD}@cluster-21dks.mongodb.net/asdf?retryWrites=true&w=majority`;
-mongoose.connect(db, { useNewUrlParser: true });
 
 // needs to come after your routes
 // handle every request that reaches this line (because products and orders did not handle this request)
@@ -60,13 +64,10 @@ app.use((req, res, next) => {
 });
 
 // handle almost all errors. This receives the error from the previous middleware
-app.use((error, req, res, next) => {
-	res.status(error.status || 500);
-	res.json({
-		error: {
-			message: error.message
-		}
-	});
+app.use(function(req, res, next) {
+	var err = new Error("Not Found");
+	res.status(404);
+	next(err);
 });
 
 module.exports = app;

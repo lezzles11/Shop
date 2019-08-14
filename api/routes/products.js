@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const ProPro = require("../models/products");
 const mongoose = require("mongoose");
 const multer = require("multer");
+const checkAuth = require("../middleware/check-auth");
 // initializes multer - specifies a folder in which all incoming files will be stored
 
 // multer will execute these functions whenever a file is receieved
@@ -31,7 +31,7 @@ const upload = multer({
 	},
 	fileFilter: fileFilter
 });
-
+const ProPro = require("../models/products");
 // IF WANT TO REPLACE WITH ANOTHER OBJECT, LOOK FOR THE VAR "REPLACE".
 
 // REPLACE
@@ -84,7 +84,7 @@ router.get("/", (req, res, next) => {
 
 // works (after creating config/db.js)
 // upload.single() means getting one file only
-router.post("/", upload.single("productImage"), (req, res, next) => {
+router.post("/", upload.single("productImage"), checkAuth, (req, res, next) => {
 	console.log(req.file);
 	// REPLACE; new product as a constructor
 	console.log(req.body.name);
@@ -94,8 +94,7 @@ router.post("/", upload.single("productImage"), (req, res, next) => {
 		_id: new mongoose.Types.ObjectId(),
 		name: req.body.name,
 		price: req.body.price,
-		productImage: req.file.path,
-		date: new Date()
+		productImage: req.file.path
 	});
 	// save is a method -> stores mongoose models / data into the database
 	newProduct
@@ -105,7 +104,15 @@ router.post("/", upload.single("productImage"), (req, res, next) => {
 			res.status(201).json({
 				message: "handling get request to /products",
 				// returns name and price
-				createdProduct: result
+				createdProduct: {
+					name: result.name,
+					price: result.price,
+					_id: result._id,
+					request: {
+						type: "Get",
+						url: "http://localhost:3000/products/" + result._id
+					}
+				}
 			});
 		})
 		.catch(err => {
@@ -145,15 +152,15 @@ router.get("/:productId", (req, res, next) => {
 			}
 		})
 		// dont want to send res.send after catch
-		.catch(err => {
-			console.log(err);
-			res.status(500).json({ error: err });
+		.catch(error => {
+			console.log(error);
+			res.status(500).json({ error: error });
 		});
 });
 
 //You want to protect this route - that not every user can access this route
 // when updating, input data like so: [{"propName": "name", "value": "something more useful" }]
-router.patch("/:productId", (req, res, next) => {
+router.patch("/:productId", checkAuth, (req, res, next) => {
 	const id = req.params.productId;
 	const updateOps = {};
 	// turn reqbody into an array
@@ -186,7 +193,7 @@ router.patch("/:productId", (req, res, next) => {
 		});
 });
 // delete product came up - does it actually delete the product?
-router.delete("/:productId", (req, res, next) => {
+router.delete("/:productId", checkAuth, (req, res, next) => {
 	const id = req.params.productId;
 	ProPro.remove({
 		_id: id
